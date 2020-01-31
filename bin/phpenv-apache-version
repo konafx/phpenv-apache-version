@@ -39,10 +39,15 @@ fi
 
 PHPENV_PREFIX_PATH="${PHPENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
 
-if [[ $PHPENV_APACHE_VERSION =~ ^5 ]]; then
-  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp5.so"
-elif [[ $PHPENV_APACHE_VERSION =~ ^7 ]]; then
-  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp7.so"
+# reg-match x.x.x
+[[ $PHPENV_APACHE_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]
+MAJOR=${BASH_REMATCH[1]}
+MINOR=${BASH_REMATCH[2]}
+#PATCH=${BASH_REMATCH[3]} # not use
+if [ -e "${PHPENV_PREFIX_PATH}/libphp${MAJOR}.${MINOR}.so" ]; then
+    PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp${MAJOR}.${MINOR}.so"
+else
+    PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp${MAJOR}.so"
 fi
 
 if [ ! -f "$PHP_MODULE_PATH" ]; then
