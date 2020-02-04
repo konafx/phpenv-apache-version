@@ -25,9 +25,9 @@ if command -v brew >/dev/null; then
     PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"
   fi
 else
-  if [ -f /etc/redhat-release ] ; then
+  if [ -d /etc/httpd/modules ] ; then
     PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
-  elif [ -f /etc/debian_version ] ; then
+  elif [ -d /usr/lib/apache2/modules ] ; then
     PHPENV_APACHE_MODULE_PATH="/usr/lib/apache2/modules"
   fi
 fi
