@@ -24,25 +24,22 @@ if command -v brew >/dev/null; then
   if [ -d "$(brew --prefix httpd)" ]; then
     PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"
   fi
-else
-  if [ -f /etc/redhat-release ] ; then
-    PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
-  elif [ -f /etc/debian_version ] ; then
-    PHPENV_APACHE_MODULE_PATH="/usr/lib/apache2/modules"
-  fi
+elif command -v apxs >/dev/null 2>&1; then
+  PHPENV_APACHE_MODULE_PATH="$(apxs -q LIBEXECDIR)"
 fi
 
 if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
-  echo "Sorry your OS is not supported." >&2
+  echo "Sorry could not find apache module path." >&2
+  echo "Check if httpd-devel or apache2-dev are installed." >&2
   exit 1
 fi
 
 PHPENV_PREFIX_PATH="${PHPENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
 
 if [[ $PHPENV_APACHE_VERSION =~ ^5 ]]; then
-  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp5.so"
+  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}${PHPENV_APACHE_MODULE_PATH}/libphp5.so"
 elif [[ $PHPENV_APACHE_VERSION =~ ^7 ]]; then
-  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp7.so"
+  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}${PHPENV_APACHE_MODULE_PATH}/libphp7.so"
 fi
 
 if [ ! -f "$PHP_MODULE_PATH" ]; then
